@@ -24,6 +24,13 @@ snakified.camelizeKeys()
 
 Just transform keys as you like and you won't got any `StackOverFlow`
 
+> Serialize json painlessly
+
+```scala
+    val complex = largeJson(10000)
+    complex.safeToString() // no stackoverflow!
+    Json.stringify(complex) // stackoverflow!
+```
 
 
 More features woking in progress

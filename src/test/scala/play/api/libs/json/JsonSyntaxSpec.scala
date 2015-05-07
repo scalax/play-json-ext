@@ -6,38 +6,33 @@ import play.api.libs.json.ext._
 class JsonSyntaxSpec extends FlatSpec with Matchers {
 
   object camel {
-    val madoka = JsObject(
-      Seq(
-        "firstName" -> JsString("Madoka"),
-        "lastName" -> JsString("Kaname")
-      )
-    )
-
-    val homura = JsObject(
-      Seq(
-        "firstName" -> JsString("Homura"),
-        "lastName" -> JsString("Akemi"),
-        "girlFriends" -> madoka
-      ))
+    val madoka = Json.obj(
+      "firstName" -> "Madoka",
+      "lastName" -> "Kaname")
+    val homura = Json.obj(
+      "firstName" -> "Homura",
+      "lastName" -> "Akemi",
+      "girlFriends" -> madoka)
 
     val magicas = JsArray(madoka :: homura :: Nil)
   }
 
   object snake {
-    val madoka = JsObject(
-      Seq(
-        "first_name" -> JsString("Madoka"),
-        "last_name" -> JsString("Kaname")
-      )
-    )
-
-    val homura = JsObject(
-      Seq(
-        "first_name" -> JsString("Homura"),
-        "last_name" -> JsString("Akemi"),
-        "girl_friends" -> madoka
-      ))
+    val madoka = Json.obj(
+        "first_name" -> "Madoka",
+        "last_name" -> "Kaname")
+    val homura = Json.obj(
+        "first_name" ->"Homura",
+        "last_name" -> "Akemi",
+        "girl_friends" -> madoka)
     val magicas = JsArray(madoka :: homura :: Nil)
+  }
+
+  def largeJson(depth: Int): JsObject = {
+    (1 to depth).map(i => Json.obj("id" -> i)).reduce { (sum, json) =>
+      val JsObject(f) = json
+      JsObject(f :+ ("nest" -> sum))
+    }
   }
 
   "Json syntax" should "snakify keys of json object" in {
@@ -54,5 +49,19 @@ class JsonSyntaxSpec extends FlatSpec with Matchers {
 
   it should "camelize keys of json array" in {
     snake.magicas.camelizeKeys() should equal(camel.magicas)
+  }
+
+  it should "stringify json object" in {
+    camel.homura.safeToString() should equal(Json.stringify(camel.homura))
+  }
+
+  it should "stringify json array" in {
+    camel.magicas.safeToString() should equal(Json.stringify(camel.magicas))
+  }
+
+  it should "stringify large json" in {
+    val complex = largeJson(10000)
+    noException should be thrownBy complex.safeToString()
+    an[StackOverflowError] should be thrownBy Json.stringify(complex)
   }
 }
