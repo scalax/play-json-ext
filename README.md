@@ -18,7 +18,7 @@ val madoka = JsObject(
 )
 
 val snakified = madoka.snakifyKeys()
-snakified.camelizeKeys(
+snakified.camelizeKeys()
 
 ```
 
