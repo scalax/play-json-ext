@@ -1,0 +1,16 @@
+language: scala
+
+scala:
+  - 2.11.7
+
+jdk:
+  - openjdk7
+
+env:
+  - CODACY_PROJECT_TOKEN=fe0e3c0908fe4f959448571cb8288bc7
+  
+script:
+  - sbt clean coverage test
+  - sbt coverageReport
+  - sbt coverageAggregate
+  - sbt codacyCoverage
