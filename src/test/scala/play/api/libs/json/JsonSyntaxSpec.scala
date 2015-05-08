@@ -35,6 +35,8 @@ class JsonSyntaxSpec extends FlatSpec with Matchers {
     }
   }
 
+  val complexJson = largeJson(20000)
+
   "Json syntax" should "snakify keys of json object" in {
     camel.homura.snakifyKeys() should equal(snake.homura)
   }
@@ -51,6 +53,11 @@ class JsonSyntaxSpec extends FlatSpec with Matchers {
     snake.magicas.camelizeKeys() should equal(camel.magicas)
   }
 
+  it should "camelize and snakify large json" in {
+    noException should be thrownBy complexJson.snakifyKeys()
+    noException should be thrownBy complexJson.camelizeKeys()
+  }
+
   it should "stringify json object" in {
     camel.homura.safeToString() should equal(Json.stringify(camel.homura))
   }
@@ -60,7 +67,7 @@ class JsonSyntaxSpec extends FlatSpec with Matchers {
   }
 
   it should "stringify large json" in {
-    val complex = largeJson(10000)
+    val complex = largeJson(20000)
     noException should be thrownBy complex.safeToString()
     an[StackOverflowError] should be thrownBy Json.stringify(complex)
   }
